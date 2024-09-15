@@ -1,0 +1,15 @@
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.csproj.AssemblyReference.cache
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.AssemblyInfoInputs.cache
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.AssemblyInfo.cs
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.csproj.CoreCompileInputs.cache
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\bin\Debug\net7.0\DotNetHospital.exe
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\bin\Debug\net7.0\DotNetHospital.deps.json
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\bin\Debug\net7.0\DotNetHospital.runtimeconfig.json
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\bin\Debug\net7.0\DotNetHospital.dll
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\bin\Debug\net7.0\DotNetHospital.pdb
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.dll
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\refint\DotNetHospital.dll
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.pdb
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\DotNetHospital.genruntimeconfig.cache
+C:\Users\jbync\OneDrive\바탕 화면\Studies\2024 Spring Information Technology\31927 .NET\Assignment1\DotNetHospital\DotNetHospital\obj\Debug\net7.0\ref\DotNetHospital.dll
