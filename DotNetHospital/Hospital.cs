@@ -31,7 +31,7 @@ public class Hospital
                 int id = Convert.ToInt32(Console.ReadLine());
             manager.WriteAt("Password : ", 0, 7);
             string pwd = Console.ReadLine();
-            foreach (User user in FileMgr.GetUserList())
+            foreach (User user in FileMgr.UserList)
             {
                 if (id.Equals(user.Id))
                 {
@@ -77,7 +77,26 @@ public class Hospital
         return null;
     }
 
-    
 
-    
+
+    ~Hospital()
+    {
+        foreach (User temp in FileMgr.AddUserList)
+        {
+            char role = ' ';
+            if (temp is Doctor) role = 'D';
+            else if (temp is Patient) role = 'P';
+            else if (temp is Admin) role = 'A';
+
+            string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
+                               temp.Phone + "," + role + "," + temp.Password;  
+            FileMgr.WriteIntoFile(FileType.USER, addString);
+        }
+
+        foreach (Appointment temp in FileMgr.AddAppointmentList)
+        {
+            string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
+            FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
+        }
+    }
 }

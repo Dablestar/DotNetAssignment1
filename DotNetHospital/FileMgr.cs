@@ -1,19 +1,39 @@
 ﻿namespace DotNetHospital;
 
+public enum FileType
+{
+    USER,
+    APPOINTMENT
+}
 public static class FileMgr
 {
+    private static List<User> userList;
+    private static List<Appointment> appointmentList;
+
+    private static List<User> addUserList;
+    private static List<Appointment> addAppointmentList;
+
+
+    static FileMgr()
+    {
+        userList = GetUserList();
+        appointmentList = GetAppointmentList();
+
+        addUserList = new List<User>();
+        addAppointmentList = new List<Appointment>();
+    }
     
     //Read user list from text file and returns
     public static List<string[]> ReadFile(string path)
     {
         int patientCount = 0;
-        List<string[]> text = new List<string[]>();
+        List<string[]> result = new List<string[]>();
         
         try
         {
             foreach (string line in File.ReadLines(path))
             {
-                text.Add(line.Split());
+                result.Add(line.Split(","));
             }
         }
         catch(FileNotFoundException e)
@@ -22,12 +42,12 @@ public static class FileMgr
             Console.ReadKey();
         }
         
-        return text;
+        return result;
     }
     public static List<User> GetUserList()
     {
         List<User> userList = new List<User>();
-        foreach(string[] tempUser in FileMgr.ReadFile("../../../userinfo.txt"))
+        foreach(string[] tempUser in ReadFile("../../../userinfo.txt"))
         {
             if (!tempUser[0].Equals("ID"))
             {
@@ -56,57 +76,79 @@ public static class FileMgr
 
         return userList;
     }
-    public static List<string> GetAppointmentList(int Id)
+    public static List<Appointment> GetAppointmentList()
     {
-        List<User> users = GetUserList();
-        List<string[]> appointments = FileMgr.ReadFile("../../../appointment.txt");
+        List<string[]> appointments = ReadFile("../../../appointment.txt");
+        List<Appointment> results = new List<Appointment>();
 
-        List<string> results = new List<string>();
-        try
+        foreach (string[] tempAppointment in appointments)
         {
-            foreach (string[] tempAppointment in appointments)
+            if (!tempAppointment[0].Equals("DOCTORID"))
             {
-                bool idExist = true;
-                foreach (User tempUser in users)
-                {
-                    if (Id == Convert.ToInt32(tempAppointment[0]))
-                    {
-                        if (Convert.ToInt32(tempAppointment[0]) == tempUser.Id && tempUser is Patient)
-                        {
-                            tempAppointment[0] = tempUser.Id.ToString();
-                        }
-                        else if (Convert.ToInt32(tempAppointment[1]) == tempUser.Id && tempUser is Doctor)
-                        {
-                            tempAppointment[1] = tempUser.Id.ToString();
-                        }
-                        else
-                        {
-                            idExist = false;
-                        }
-                    }
-                }
-
-                if (idExist)
-                {
-                    results.Add(tempAppointment[0] + "  | " + tempAppointment[1] + "    | " + tempAppointment[2]);
-                }
-                else
-                {
-                    throw new Exception("Data Not Found");
-                }
-
+                Appointment temp = new Appointment(Convert.ToInt32(tempAppointment[0]), Convert.ToInt32(tempAppointment[1]), tempAppointment[2]);
+                results.Add(temp);
             }
         }
-        catch (Exception e)
-        {
-            Console.Write("Invalid appointment data detected.");
-        }
+        
         
         return results;
     }
-
-    public static void WriteIntoFile(User user)
+    public static List<Appointment> GetAppointmentList(int id, string type)
     {
+        List<Appointment> result = new List<Appointment>();
+        if (type.Equals("Doctor"))
+        {
+            foreach (Appointment temp in GetAppointmentList())
+            {
+                if (temp.DoctorId == id)
+                {
+                    result.Add(temp);
+                }
+            }    
+        }
+        if (type.Equals("Patient"))
+        {
+            foreach (Appointment temp in GetAppointmentList())
+            {
+                if (temp.PatientId == id)
+                {
+                    result.Add(temp);
+                }
+            }  
+        }
         
+        return result;
     }
+    
+    public static void WriteIntoFile(FileType type, string info)
+    {
+        if (type.Equals(FileType.APPOINTMENT))
+        {
+            File.WriteAllText("../../../appointment.txt", info);
+        }else if (type.Equals(FileType.USER))
+        {
+            File.WriteAllText("../../../userinfo.txt", info);
+        }
+    }
+
+    public static List<User> UserList
+    {
+        get { return userList; }
+    }
+    public static List<Appointment> AppointmentList
+    {
+        get { return appointmentList; }
+    }
+
+    public static List<Appointment> AddAppointmentList
+    {
+        get { return addAppointmentList; }
+    }
+    
+    public static List<User> AddUserList
+    {
+        get { return AddUserList; }
+    }
+
+    
 }
