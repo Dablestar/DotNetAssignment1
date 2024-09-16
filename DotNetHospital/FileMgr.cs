@@ -122,13 +122,9 @@ public static class FileMgr
     
     public static void WriteIntoFile(FileType type, string info)
     {
-        if (type.Equals(FileType.APPOINTMENT))
-        {
-            File.WriteAllText("../../../appointment.txt", info);
-        }else if (type.Equals(FileType.USER))
-        {
-            File.WriteAllText("../../../userinfo.txt", info);
-        }
+        string path = type.Equals(FileType.APPOINTMENT) ? "../../../appointment.txt" : "../../../userinfo.txt";
+        StreamWriter sw = new StreamWriter(path);
+        sw.WriteLine(info);
     }
 
     public static List<User> UserList

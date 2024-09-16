@@ -61,7 +61,7 @@ public class Doctor : User
 
     private void PrintAppointmentWithPatient()
     {
-        throw new NotImplementedException();
+        
     }
 
     private void PrintParticularPatient()
@@ -81,7 +81,9 @@ public class Doctor : User
 
     private void PrintDoctorDetails()
     {
-        throw new NotImplementedException();
+        int row = 6;
+        Manager.DrawSquare("My Details");
+        Manager.WriteAt("Name           | Email Address                  | Phone            | Address           ", 4, row);
     }
 
     public override string ToString()

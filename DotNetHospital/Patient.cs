@@ -58,41 +58,71 @@ public class Patient : User
         int row = 6;
         int idx = 0;
         int choice;
+        int doctorId = 0;
+        bool appointmentExists = false;
         List<User> doctorList = new List<User>();
         Manager.DrawSquare("Book Appointment");
-        Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with : ", 0, row);
-        foreach (User temp in FileMgr.UserList)
-        {
-            if (temp is Doctor)
-            {
-                Manager.WriteAt("#"+ ++idx + ": " + temp.ToString() + "\n", 0, ++row);
-                doctorList.Add(temp);
-            }
-        }
 
-        while (true)
+        foreach (Appointment temp in FileMgr.AppointmentList)
         {
-            choice = Convert.ToInt32(Console.ReadLine());
-            if (choice > doctorList.Count + 1)
+            if (temp.PatientId == Id)
             {
-                Manager.WriteAt("Invalid Number, Please try again", 0, ++row);
-            }
-            else
-            {
+                appointmentExists = true;
+                doctorId = temp.DoctorId;
                 break;
             }
         }
+
+        if (!appointmentExists)
+        {
+            Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with : ", 0, row);
+            foreach (User temp in FileMgr.UserList)
+            {
+                if (temp is Doctor)
+                {
+                    Manager.WriteAt("#"+ ++idx + ": " + temp.ToString() + "\n", 0, ++row);
+                    doctorList.Add(temp);
+                }
+            }
+
+            while (true)
+            {
+                choice = Convert.ToInt32(Console.ReadLine());
+                if (choice > doctorList.Count + 1)
+                {
+                    Manager.WriteAt("Invalid Number, Please try again", 0, ++row);
+                }
+                else
+                {
+                    doctorId = doctorList[choice - 1].Id;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Manager.WriteAt("Your Doctor Detail : ", 0, ++row);
+            foreach (User temp in FileMgr.UserList)
+            {
+                if (temp.Id == doctorId)
+                {
+                    Manager.WriteAt(temp.ToString(), 0, ++row);
+                    break;
+                }
+            }
+        }
+        
         Manager.WriteAt("Description of the Appointment : ", 0, ++row);
         string description = Console.ReadLine();
 
-        Appointment newAppointment = new Appointment(doctorList[choice].Id, Id, description);
-        string fileInputString = doctorList[choice].Id + "," + Id + "," + description;
+        Appointment newAppointment = new Appointment(doctorId, Id, description);
+        string fileInputString = doctorId + "," + Id + "," + description;
         FileMgr.WriteIntoFile(FileType.APPOINTMENT, fileInputString);
         FileMgr.AppointmentList.Add(newAppointment);
         FileMgr.AddAppointmentList.Add(newAppointment);
         
         Manager.WriteAt("The appointment has been booked successfully", 0, ++row);
-
+        Menu();
     }
 
 
@@ -100,7 +130,7 @@ public class Patient : User
     {
         int column = 6;
         Manager.DrawSquare("My Appointments");
-        Manager.WriteAt("Doctor         | Patient           | Description \n", 4, column);
+        Manager.WriteAt("Doctor                 | Patient                   | Description \n", 4, column);
         foreach (Appointment currentAppointment in FileMgr.GetAppointmentList(Id, "Patient"))
         {
             Manager.WriteAt(currentAppointment.ToString(), 4, ++column);
@@ -119,7 +149,7 @@ public class Patient : User
         Manager.DrawSquare("My Doctor");
         
         Manager.WriteAt("Your doctor : ", 4, row);
-        Manager.WriteAt(" Name          | Email Address         | Phone         | Address       ", 4, ++row);
+        Manager.WriteAt(" Name                  | Email Address                             | Phone               | Address       ", 4, ++row);
         foreach (Appointment appointment in FileMgr.GetAppointmentList(Id, "Patient"))
         {
             if (!doctorIdList.Contains(appointment.DoctorId))
@@ -154,5 +184,10 @@ public class Patient : User
         Manager.WriteAt("Phone : " + Phone, 4, 10);
         Console.ReadKey();
         Menu();
+    }
+
+    public override string ToString()
+    {
+        return Email + "         | " + Phone + "             | " + Address;
     }
 }

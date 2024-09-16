@@ -41,12 +41,14 @@ public class Hospital
                 {
                     pwd.AppendChar(keyInfo.KeyChar);
                     Console.Write("*");
-                }else if (keyInfo.Key == ConsoleKey.Backspace && pwd.Length > 0)
+                }
+                else if (keyInfo.Key == ConsoleKey.Backspace && pwd.Length > 0)
                 {
                     pwd.RemoveAt(pwd.Length - 1);
                     Console.Write("\b \b");
                 }
             } while (keyInfo.Key != ConsoleKey.Enter);
+
             foreach (User user in FileMgr.UserList)
             {
                 if (id.Equals(user.Id))
@@ -94,25 +96,30 @@ public class Hospital
     }
 
 
-
     ~Hospital()
     {
-        foreach (User temp in FileMgr.AddUserList)
+        if (FileMgr.AddAppointmentList.Count != 0)
         {
-            char role = ' ';
-            if (temp is Doctor) role = 'D';
-            else if (temp is Patient) role = 'P';
-            else if (temp is Admin) role = 'A';
+            foreach (User temp in FileMgr.AddUserList)
+            {
+                char role = ' ';
+                if (temp is Doctor) role = 'D';
+                else if (temp is Patient) role = 'P';
+                else if (temp is Admin) role = 'A';
 
-            string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
-                               temp.Phone + "," + role + "," + temp.Password;  
-            FileMgr.WriteIntoFile(FileType.USER, addString);
+                string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
+                                   temp.Phone + "," + role + "," + temp.Password;
+                FileMgr.WriteIntoFile(FileType.USER, addString);
+            }
         }
 
-        foreach (Appointment temp in FileMgr.AddAppointmentList)
+        if (FileMgr.AddAppointmentList.Count != 0)
         {
-            string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
-            FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
+            foreach (Appointment temp in FileMgr.AddAppointmentList)
+            {
+                string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
+                FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
+            }
         }
     }
 }
