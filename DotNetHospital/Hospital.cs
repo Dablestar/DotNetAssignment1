@@ -3,6 +3,7 @@
 
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Security;
 using DotNetHospital;
 
 public class Hospital
@@ -28,15 +29,30 @@ public class Hospital
             Console.Clear();
             manager.DrawSquare("login");
             manager.WriteAt("ID : ", 0, 6);
-                int id = Convert.ToInt32(Console.ReadLine());
+            int id = Convert.ToInt32(Console.ReadLine());
             manager.WriteAt("Password : ", 0, 7);
-            string pwd = Console.ReadLine();
+            SecureString pwd = new SecureString();
+            ConsoleKeyInfo keyInfo;
+
+            do
+            {
+                keyInfo = Console.ReadKey(true);
+                if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    pwd.AppendChar(keyInfo.KeyChar);
+                    Console.Write("*");
+                }else if (keyInfo.Key == ConsoleKey.Backspace && pwd.Length > 0)
+                {
+                    pwd.RemoveAt(pwd.Length - 1);
+                    Console.Write("\b \b");
+                }
+            } while (keyInfo.Key != ConsoleKey.Enter);
             foreach (User user in FileMgr.UserList)
             {
                 if (id.Equals(user.Id))
                 {
                     accountExist = true;
-                    if (pwd.Equals(user.Password))
+                    if (new System.Net.NetworkCredential("", pwd).Password.Equals(user.Password))
                     {
                         if (user is Patient)
                         {

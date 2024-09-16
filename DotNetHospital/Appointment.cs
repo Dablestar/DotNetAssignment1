@@ -6,11 +6,7 @@ public struct Appointment
 
     private int doctorId, patientId;
     private string description;
-
-    public Appointment()
-    {
-        
-    }
+    
     public Appointment(int doctorId, int patientId, string description)
     {
         this.doctorId = doctorId;
@@ -52,7 +48,7 @@ public struct Appointment
             }
         }
 
-        return doctorName + "   | " + patientName + "   | " + description;
+        return doctorName + "           | " + patientName + "           | " + description;
     }
     
 }
