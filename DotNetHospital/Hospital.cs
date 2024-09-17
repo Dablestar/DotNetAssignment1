@@ -94,32 +94,5 @@ public class Hospital
 
         return null;
     }
-
-
-    ~Hospital()
-    {
-        if (FileMgr.AddAppointmentList.Count != 0)
-        {
-            foreach (User temp in FileMgr.AddUserList)
-            {
-                char role = ' ';
-                if (temp is Doctor) role = 'D';
-                else if (temp is Patient) role = 'P';
-                else if (temp is Admin) role = 'A';
-
-                string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
-                                   temp.Phone + "," + role + "," + temp.Password;
-                FileMgr.WriteIntoFile(FileType.USER, addString);
-            }
-        }
-
-        if (FileMgr.AddAppointmentList.Count != 0)
-        {
-            foreach (Appointment temp in FileMgr.AddAppointmentList)
-            {
-                string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
-                FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
-            }
-        }
-    }
+   
 }

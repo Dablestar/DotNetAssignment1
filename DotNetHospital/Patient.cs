@@ -1,20 +1,31 @@
 ﻿namespace DotNetHospital;
 public class Patient : User
 {
-    private UserType type;
+    private Doctor mainDoctor;
 
     public Patient(int id, string fullName, string address, string email, string phone, string password) : base(id,
         fullName, address, email, phone, password)
     {
-        this.type = UserType.Patient;
+        
+    }
+    
+    public Patient(int id, string fullName, string address, string email, string phone, string password, int doctorId) : base(id,
+        fullName, address, email, phone, password)
+    {
+        foreach (User doctor in FileMgr.UserList)
+        {
+            if (doctor.Id == doctorId)
+            {
+                mainDoctor = (Doctor)doctor;
+            } 
+        }
     }
 
     public override void Menu()
     {
         int input = 0;
-        bool exit = false;
         Manager.DrawSquare("Patient Menu");
-        Manager.WriteAt("\nWelcome to DOTNET Hospital \n" +
+        Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
                         "Please Choose an option \n" +
                         "1. List patient details \n" +
                         "2. List my doctor details\n" +
@@ -23,7 +34,7 @@ public class Patient : User
                         "5. Exit to Login\n" +
                         "6. Exit System\n", 4, 6);
 
-        while (!exit)
+        while (true)
         {
             input = Convert.ToInt32(Console.ReadLine());
             switch (input)
@@ -44,8 +55,7 @@ public class Patient : User
                     Hospital.Login().Menu();
                     break;
                 case 6:
-                    exit = true;
-                    break;
+                    return;
                 default:
                     Console.WriteLine("Error, Please try again");
                     break;
@@ -117,7 +127,6 @@ public class Patient : User
 
         Appointment newAppointment = new Appointment(doctorId, Id, description);
         string fileInputString = doctorId + "," + Id + "," + description;
-        FileMgr.WriteIntoFile(FileType.APPOINTMENT, fileInputString);
         FileMgr.AppointmentList.Add(newAppointment);
         FileMgr.AddAppointmentList.Add(newAppointment);
         
@@ -128,12 +137,12 @@ public class Patient : User
 
     private void PrintAppointmentList()
     {
-        int column = 6;
+        int row = 6;
         Manager.DrawSquare("My Appointments");
-        Manager.WriteAt("Doctor                 | Patient                   | Description \n", 4, column);
+        Manager.WriteAt("Doctor                 | Patient                   | Description \n", 4, row);
         foreach (Appointment currentAppointment in FileMgr.GetAppointmentList(Id, "Patient"))
         {
-            Manager.WriteAt(currentAppointment.ToString(), 4, ++column);
+            Manager.WriteAt(currentAppointment.ToString(), 4, ++row);
         }
 
         Console.ReadKey();
@@ -188,6 +197,21 @@ public class Patient : User
 
     public override string ToString()
     {
-        return Email + "         | " + Phone + "             | " + Address;
+        return Email + "         | " + Phone + "             | " + Address;   
     }
+    
+    ~Patient()
+    {
+        Console.WriteLine("Destructor Test - Patient");
+
+        if (FileMgr.AddAppointmentList.Count != 0)
+        {
+            foreach (Appointment temp in FileMgr.AddAppointmentList)
+            {
+                string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
+                FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
+            }
+        }
+    }
+    
 }

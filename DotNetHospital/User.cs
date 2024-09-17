@@ -1,11 +1,5 @@
 ﻿namespace DotNetHospital;
 
-public enum UserType
-{
-    Patient,
-    Doctor,
-    Admin
-}
 
 public class User
 {
@@ -73,4 +67,5 @@ public class User
     {
         get { return manager; }
     }
+    
 }

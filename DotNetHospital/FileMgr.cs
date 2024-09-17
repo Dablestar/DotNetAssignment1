@@ -13,7 +13,6 @@ public static class FileMgr
     private static List<User> addUserList;
     private static List<Appointment> addAppointmentList;
 
-
     static FileMgr()
     {
         userList = GetUserList();
