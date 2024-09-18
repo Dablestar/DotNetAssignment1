@@ -1,19 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-using System.Drawing;
-using System.Runtime.CompilerServices;
 using System.Security;
 using DotNetHospital;
 
 public class Hospital
 {
-    public static void Main(string[] args)
-    {
-        Login().Menu();
-    }
-
-    public static User Login()
+    public User Login()
     {
         bool accountExist = false, passCorrect = false;
         //call ReadFile() to get userList
@@ -94,5 +87,36 @@ public class Hospital
 
         return null;
     }
-   
+
+    public static void OnApplicationExit(object sender, EventArgs e)
+    {
+        Console.WriteLine("Destructor Test - Patient");
+        Console.ReadKey();
+
+        if (FileMgr.AddAppointmentList.Count != 0)
+        {
+            foreach (Appointment temp in FileMgr.AddAppointmentList)
+            {
+                string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
+                FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
+            }
+        }
+
+        Console.WriteLine("Destructor Test - Admin");
+        Console.ReadKey();
+
+        if (FileMgr.AddUserList.Count != 0)
+        {
+            foreach (User temp in FileMgr.AddUserList)
+            {
+                char role = ' ';
+                if (temp is Doctor) role = 'D';
+                else if (temp is Patient) role = 'P';
+
+                string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
+                                   temp.Phone + "," + role + "," + temp.Password + "," + " ";
+                FileMgr.WriteIntoFile(FileType.USER, addString);
+            }
+        }
+    }
 }

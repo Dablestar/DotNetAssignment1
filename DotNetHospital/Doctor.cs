@@ -9,8 +9,8 @@ public class Doctor : User
     {
         
     }
-
-    public override void Menu()
+    
+    public override bool Menu()
     {
         int input = 0;
         Manager.DrawSquare("Doctor Menu");
@@ -45,10 +45,9 @@ public class Doctor : User
                     PrintAppointmentWithPatient();
                     break;
                 case 6:
-                    Hospital.Login().Menu();
-                    break;
+                    return false;
                 case 7:
-                    return;
+                    return true;
                 default:
                     Console.WriteLine("Error, Please try again");
                     break;
@@ -157,7 +156,7 @@ public class Doctor : User
             {
                 if (patient.Id == id)
                 {
-                    Manager.WriteAt(patient.FullName + "            | " + FullName + "          | " + patient,0, ++row);
+                    Manager.WriteAt(patient.ToString(),0, ++row);
                 }
             }
         }
@@ -182,16 +181,4 @@ public class Doctor : User
         return FullName + "            | " + Email + "         | " + Phone + "         | " + Address;
     }
     
-    ~Doctor()
-    {
-        Console.WriteLine("Destructor Test - Doctor");
-        if (FileMgr.AddAppointmentList.Count != 0)
-        {
-            foreach (Appointment temp in FileMgr.AddAppointmentList)
-            {
-                string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
-                FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
-            }
-        }
-    }
 }

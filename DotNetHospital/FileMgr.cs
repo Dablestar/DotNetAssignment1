@@ -1,4 +1,7 @@
-﻿namespace DotNetHospital;
+﻿using System.Numerics;
+using System.Runtime.InteropServices.Marshalling;
+
+namespace DotNetHospital;
 
 public enum FileType
 {
@@ -25,7 +28,6 @@ public static class FileMgr
     //Read user list from text file and returns
     public static List<string[]> ReadFile(string path)
     {
-        int patientCount = 0;
         List<string[]> result = new List<string[]>();
         
         try
@@ -52,9 +54,18 @@ public static class FileMgr
             {
                 if (tempUser[5].Equals("P"))
                 {
-                    Patient tempPatient = new Patient(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
-                        tempUser[3], tempUser[4], tempUser[6]);
-                    userList.Add(tempPatient);
+                    if (tempUser.Length == 8)
+                    {
+                        Patient tempPatient = new Patient(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
+                            tempUser[3], tempUser[4], tempUser[6], Convert.ToInt32(tempUser[7]));
+                        userList.Add(tempPatient);
+                    }
+                    else
+                    {
+                        Patient tempPatient = new Patient(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
+                            tempUser[3], tempUser[4], tempUser[6]);    
+                        userList.Add(tempPatient);
+                    }
                 }else if (tempUser[5].Equals("D"))
                 {
                     Doctor tempPatient = new Doctor(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
@@ -97,7 +108,7 @@ public static class FileMgr
         List<Appointment> result = new List<Appointment>();
         if (type.Equals("Doctor"))
         {
-            foreach (Appointment temp in GetAppointmentList())
+            foreach (Appointment temp in appointmentList)
             {
                 if (temp.DoctorId == id)
                 {
@@ -107,7 +118,7 @@ public static class FileMgr
         }
         if (type.Equals("Patient"))
         {
-            foreach (Appointment temp in GetAppointmentList())
+            foreach (Appointment temp in appointmentList)
             {
                 if (temp.PatientId == id)
                 {
@@ -122,8 +133,80 @@ public static class FileMgr
     public static void WriteIntoFile(FileType type, string info)
     {
         string path = type.Equals(FileType.APPOINTMENT) ? "../../../appointment.txt" : "../../../userinfo.txt";
-        StreamWriter sw = new StreamWriter(path);
-        sw.WriteLine(info);
+        try
+        {
+            List<string> contents = new List<string>();
+            contents.Add(info);
+            string[] result = contents.ToArray();
+            File.WriteAllLines(path, result);
+
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.Clear();
+            Console.WriteLine("File Not Found");
+        }
+        
+    }
+
+    public static void AddDoctorToExistingPatient(Patient patient)
+    {
+        string path = "../../../userinfo.txt";
+        string[] strList = File.ReadAllLines(path);
+
+        for(int i=0; i<strList.Length; i++)
+        {
+            if (strList[i].Contains(patient.Id.ToString()))
+            {
+                strList[i] = patient.Id + "," + patient.FullName + "," + patient.Address + "," + patient.Email + "," +
+                             patient.Phone + "," + "P," + patient.Password + "," + patient.MainDoctor;
+            }
+        }
+        
+        File.WriteAllLines(path, strList);
+    }
+
+    public static string GetFullNameById(int id)
+    {
+        try
+        {
+            foreach (User user in UserList)
+            {
+                if (user.Id == id)
+                {
+                    return user.FullName;
+                }
+            }
+
+            throw new Exception("User does not exists");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+    }
+    
+
+    public static User GetUserById(int id)
+    {
+        try
+        {
+            foreach (User user in UserList)
+            {
+                if (user.Id == id)
+                {
+                    return user;
+                }
+            }
+
+            throw new Exception("User does not exists");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
     }
 
     public static List<User> UserList
@@ -142,7 +225,7 @@ public static class FileMgr
     
     public static List<User> AddUserList
     {
-        get { return AddUserList; }
+        get { return addUserList; }
     }
 
     

@@ -15,7 +15,7 @@ public class Admin : User
     {
     }
 
-    public override void Menu()
+    public override bool Menu()
     {
         int input = 0;
         Manager.DrawSquare("Administrator Menu");
@@ -54,10 +54,9 @@ public class Admin : User
                     AddUser(UserType.Patient);
                     break;
                 case 7:
-                    Hospital.Login().Menu();
-                    return;
+                    return false;
                 case 8:
-                    return;
+                    return true;
                 default:
                     Console.WriteLine("Error, Please try again");
                     break;
@@ -358,23 +357,5 @@ public class Admin : User
         Manager.WriteAt(firstName + " " + lastName + " added successfully.", 0, ++row);
         Console.ReadKey();
         Menu();
-    }
-
-    ~Admin()
-    {
-        Console.WriteLine("Destructor Test - Admin");
-        if (FileMgr.AddUserList.Count != 0)
-        {
-            foreach (User temp in FileMgr.AddUserList)
-            {
-                char role = ' ';
-                if (temp is Doctor) role = 'D';
-                else if (temp is Patient) role = 'P';
-                    
-                string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
-                                   temp.Phone + "," + role + "," + temp.Password + "," + " ";
-                FileMgr.WriteIntoFile(FileType.USER, addString);
-            }
-        }
     }
 }

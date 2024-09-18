@@ -22,9 +22,10 @@ public class User
         manager = new ConsoleMgr();
     }
 
-    public virtual void Menu()
+    public virtual bool Menu()
     {
         Console.WriteLine("Debug");
+        return false;
     }
 
     public int Id

@@ -1,5 +1,5 @@
 ID,NAME,ADDDRESS,EMAIL,PHONE,ROLE,PASSWORD
-13267,Jungbyn Choi,Haymarket,jbynchoi@gmail.com,0434376984,P,999
-1111,Test,Sydenham,buruchoi@twitter.com,0434369747,P,111
-14209009,Martin Choi,Sydney,Jungbyn.Choi-1@studnet.uts.edu.au,0434376985,D,1324
 3466263,Buru Choi,Strathfield,Jungbyn.Choi@student.uts.edu.au,0434376986,A,6974
+14209009,Martin Choi,Sydney,Jungbyn.Choi-1@studnet.uts.edu.au,0434376985,D,1324
+13267,Jungbyn Choi,Haymarket,jbynchoi@gmail.com,0434376984,P,999,14209009
+1111,Test,Sydenham,buruchoi@twitter.com,0434369747,P,111

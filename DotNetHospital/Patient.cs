@@ -1,41 +1,35 @@
 ﻿namespace DotNetHospital;
 public class Patient : User
 {
-    private Doctor mainDoctor;
+    private int? mainDoctor;
 
     public Patient(int id, string fullName, string address, string email, string phone, string password) : base(id,
         fullName, address, email, phone, password)
     {
-        
+        mainDoctor = null;
     }
     
     public Patient(int id, string fullName, string address, string email, string phone, string password, int doctorId) : base(id,
         fullName, address, email, phone, password)
     {
-        foreach (User doctor in FileMgr.UserList)
-        {
-            if (doctor.Id == doctorId)
-            {
-                mainDoctor = (Doctor)doctor;
-            } 
-        }
+        mainDoctor = doctorId;
     }
 
-    public override void Menu()
+    public override bool Menu()
     {
-        int input = 0;
-        Manager.DrawSquare("Patient Menu");
-        Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
-                        "Please Choose an option \n" +
-                        "1. List patient details \n" +
-                        "2. List my doctor details\n" +
-                        "3. List all appointments\n" +
-                        "4. Book appointments\n" +
-                        "5. Exit to Login\n" +
-                        "6. Exit System\n", 4, 6);
-
-        while (true)
+        while (true) 
         {
+            int input = 0;
+            bool isQuit = false;
+            Manager.DrawSquare("Patient Menu");
+            Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
+                            "Please Choose an option \n" +
+                            "1. List patient details \n" +
+                            "2. List my doctor details\n" +
+                            "3. List all appointments\n" +
+                            "4. Book appointments\n" +
+                            "5. Exit to Login\n" +
+                            "6. Exit System\n", 4, 6);
             input = Convert.ToInt32(Console.ReadLine());
             switch (input)
             {
@@ -52,15 +46,21 @@ public class Patient : User
                     AddAppointment();
                     break;
                 case 5:
-                    Hospital.Login().Menu();
-                    break;
+                    return false;
                 case 6:
-                    return;
+                    return true;
                 default:
                     Console.WriteLine("Error, Please try again");
                     break;
             }
+
+            if (isQuit)
+            {
+                break;
+            }
         }
+
+        return false;
     }
 
     private void AddAppointment()
@@ -68,43 +68,32 @@ public class Patient : User
         int row = 6;
         int idx = 0;
         int choice;
-        int doctorId = 0;
-        bool appointmentExists = false;
         List<User> doctorList = new List<User>();
         Manager.DrawSquare("Book Appointment");
 
-        foreach (Appointment temp in FileMgr.AppointmentList)
-        {
-            if (temp.PatientId == Id)
-            {
-                appointmentExists = true;
-                doctorId = temp.DoctorId;
-                break;
-            }
-        }
-
-        if (!appointmentExists)
+        if (mainDoctor == null)
         {
             Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with : ", 0, row);
             foreach (User temp in FileMgr.UserList)
             {
                 if (temp is Doctor)
                 {
-                    Manager.WriteAt("#"+ ++idx + ": " + temp.ToString() + "\n", 0, ++row);
+                    Manager.WriteAt("#"+ ++idx + ": " + temp + "\n", 0, ++row);
                     doctorList.Add(temp);
                 }
             }
 
             while (true)
             {
-                choice = Convert.ToInt32(Console.ReadLine());
+                choice = Convert.ToInt32(Console.Read());
                 if (choice > doctorList.Count + 1)
                 {
                     Manager.WriteAt("Invalid Number, Please try again", 0, ++row);
                 }
                 else
                 {
-                    doctorId = doctorList[choice - 1].Id;
+                    mainDoctor = doctorList[choice - 1].Id;
+                    FileMgr.AddDoctorToExistingPatient(this);
                     break;
                 }
             }
@@ -112,26 +101,20 @@ public class Patient : User
         else
         {
             Manager.WriteAt("Your Doctor Detail : ", 0, ++row);
-            foreach (User temp in FileMgr.UserList)
-            {
-                if (temp.Id == doctorId)
-                {
-                    Manager.WriteAt(temp.ToString(), 0, ++row);
-                    break;
-                }
-            }
+            Manager.WriteAt(FileMgr.GetUserById(mainDoctor.Value).ToString(), 0, ++row);
         }
         
         Manager.WriteAt("Description of the Appointment : ", 0, ++row);
         string description = Console.ReadLine();
 
-        Appointment newAppointment = new Appointment(doctorId, Id, description);
-        string fileInputString = doctorId + "," + Id + "," + description;
+        Appointment newAppointment = new Appointment(mainDoctor.Value, Id, description);
         FileMgr.AppointmentList.Add(newAppointment);
         FileMgr.AddAppointmentList.Add(newAppointment);
         
+        
+        
         Manager.WriteAt("The appointment has been booked successfully", 0, ++row);
-        Menu();
+        Console.ReadKey();
     }
 
 
@@ -146,7 +129,6 @@ public class Patient : User
         }
 
         Console.ReadKey();
-        Menu();
     }
 
     private void PrintDoctorDetails()
@@ -156,30 +138,17 @@ public class Patient : User
         List<User> userList = FileMgr.UserList;
 
         Manager.DrawSquare("My Doctor");
-        
-        Manager.WriteAt("Your doctor : ", 4, row);
-        Manager.WriteAt(" Name                  | Email Address                             | Phone               | Address       ", 4, ++row);
-        foreach (Appointment appointment in FileMgr.GetAppointmentList(Id, "Patient"))
+        if (mainDoctor != null)
         {
-            if (!doctorIdList.Contains(appointment.DoctorId))
-            {
-                doctorIdList.Add(appointment.DoctorId);
-            }
+            Manager.WriteAt("Your doctor : ", 4, row);
+            Manager.WriteAt(" Name                  | Email Address                             | Phone               | Address       ", 4, ++row);
+            Manager.WriteAt(FileMgr.GetUserById(mainDoctor.Value).ToString(), 4, ++row);
         }
-
-        foreach (User user in userList)
+        else
         {
-            foreach (int id in doctorIdList)
-            {
-                if (id == user.Id)
-                {
-                    Manager.WriteAt(user.ToString(), 4,  ++row);
-                }
-            }
+            Manager.WriteAt("You are not registered by any doctor. Please try again later.", 4, ++row);
         }
-
         Console.ReadKey();
-        Menu();
     }
 
     private void PrintPatientDetails()
@@ -192,17 +161,29 @@ public class Patient : User
         Manager.WriteAt("Email : " + Email, 4, 9);
         Manager.WriteAt("Phone : " + Phone, 4, 10);
         Console.ReadKey();
-        Menu();
     }
 
     public override string ToString()
     {
-        return Email + "         | " + Phone + "             | " + Address;   
+        if (mainDoctor == null)
+        {
+            return FullName + "         |           | " + Email + "         | " + Phone + "             | " + Address;    
+        }
+
+        return FullName + "         | " + FileMgr.GetFullNameById(mainDoctor.Value) + "           | " + Email + "         | " + Phone +
+               "         | " + Address;
     }
-    
+
+    public int MainDoctor
+    {
+        get { return mainDoctor.Value; }
+        set { mainDoctor = value; }
+    }
+
     ~Patient()
     {
         Console.WriteLine("Destructor Test - Patient");
+        Console.ReadKey();
 
         if (FileMgr.AddAppointmentList.Count != 0)
         {
@@ -213,5 +194,5 @@ public class Patient : User
             }
         }
     }
-    
+
 }
