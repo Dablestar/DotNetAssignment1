@@ -170,7 +170,9 @@ public class Admin : User
             }
         }
 
-        Manager.WriteAt("Name          | Doctor             | Email Address                  | Phone            | Address           ", 0,
+        Manager.WriteAt(
+            "Name          | Doctor             | Email Address                  | Phone            | Address           ",
+            0,
             ++row);
         Manager.WriteAt(searchPatient.ToString(), 0, ++row);
 
@@ -181,9 +183,15 @@ public class Admin : User
     private void AddUser(UserType user)
     {
         int id, row = 6;
+        List<int> idList = new List<int>();
+
+        foreach (User temp in FileMgr.UserList)
+        {
+            idList.Add(temp.Id);
+        }
         string firstName, lastName, streetNum, streetName, city, email, phone, password = null;
-        Regex regex = new Regex("[^a-zA-Z]");
-        Regex numRegEx = new Regex("[^0-9]");
+        Regex regex = new Regex("[^a-zA-Z0-9\\.]");
+        Regex numRegEx = new Regex("[0-9]");
 
         if (user == UserType.Patient)
         {
@@ -197,10 +205,14 @@ public class Admin : User
         while (true)
         {
             Manager.WriteAt("ID : ", 0, ++row);
-            id = Convert.ToInt32(Console.ReadLine());
-            if (id < 10000000 || id > 99999999)
+            string input = Console.ReadLine();
+            Match match = numRegEx.Match(input);
+            if (!int.TryParse(input, out id) || id < 10000000 || id > 99999999 || !match.Success)
             {
                 Manager.WriteAt("Invalid Id, Please write a 8 digits number", 0, ++row);
+            }else if (idList.Contains(id))
+            {
+                Manager.WriteAt("ID Duplicates. Please try again with another ID", 0, ++row);   
             }
             else
             {
@@ -243,7 +255,7 @@ public class Admin : User
         {
             Manager.WriteAt("Email : ", 0, ++row);
             email = Console.ReadLine();
-            if (!lastName.Contains("@"))
+            if (!email.Contains('@'))
             {
                 Manager.WriteAt("invalid email address. ", 0,
                     ++row);
@@ -346,14 +358,15 @@ public class Admin : User
                 email, phone, password);
             FileMgr.UserList.Add(doctor);
             FileMgr.AddUserList.Add(doctor);
-        }else if (user == UserType.Patient)
+        }
+        else if (user == UserType.Patient)
         {
             Patient patient = new Patient(id, firstName + " " + lastName, streetNum + ", " + streetName + ", " + city,
                 email, phone, password);
             FileMgr.UserList.Add(patient);
             FileMgr.AddUserList.Add(patient);
         }
-        
+
         Manager.WriteAt(firstName + " " + lastName + " added successfully.", 0, ++row);
         Console.ReadKey();
         Menu();
