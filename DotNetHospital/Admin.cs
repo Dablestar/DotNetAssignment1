@@ -4,35 +4,39 @@ namespace DotNetHospital;
 
 public class Admin : User
 {
-    private enum UserType
+    //Type indicator
+    private enum UserType 
     {
         Doctor,
         Patient
     }
-
+    
+    //Constructor
     public Admin(int id, string fullName, string address, string email, string phone, string password) : base(id,
         fullName, address, email, phone, password)
     {
     }
-
+    
+    //Standard Menu based on while(true) loop.
     public override bool Menu()
     {
-        int input = 0;
-        Manager.DrawSquare("Administrator Menu");
-        Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
-                        "Please Choose an option \n" +
-                        "1. List all doctors \n" +
-                        "2. Check doctor details\n" +
-                        "3. List all patients\n" +
-                        "4. Check patient details\n" +
-                        "5. Add doctor\n" +
-                        "6. Add patient\n" +
-                        "7. Exit to Login\n" +
-                        "8. Exit System\n", 4, 6);
-
         while (true)
         {
+            int input = 0;
+            Manager.DrawSquare("Administrator Menu");
+            Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
+                            "Please Choose an option \n" +
+                            "1. List all doctors \n" +
+                            "2. Check doctor details\n" +
+                            "3. List all patients\n" +
+                            "4. Check patient details\n" +
+                            "5. Add doctor\n" +
+                            "6. Add patient\n" +
+                            "7. Exit to Login\n" +
+                            "8. Exit System\n", 4, 6);
             input = Convert.ToInt32(Console.ReadLine());
+            
+            //Call method based on input number
             switch (input)
             {
                 case 1:
@@ -63,7 +67,8 @@ public class Admin : User
             }
         }
     }
-
+    
+    //Print all doctors from userList
     private void PrintAllDoctors()
     {
         int row = 6;
@@ -80,9 +85,9 @@ public class Admin : User
         }
 
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //Print doctor in userList with doctorId received
     private void PrintDoctorDetails()
     {
         int row = 6;
@@ -90,26 +95,26 @@ public class Admin : User
         bool patientExists = false;
         Doctor searchDoctor = null;
 
-        Manager.DrawSquare("Check Patient Details");
+        Manager.DrawSquare("Check Doctor Details");
 
         while (!patientExists)
         {
-            Manager.WriteAt("Enter the ID of the patient to check : ", 0, ++row);
+            Manager.WriteAt("Enter the ID of the doctor to check : ", 0, ++row);
             input = Convert.ToInt32(Console.ReadLine());
 
-            foreach (User patient in FileMgr.UserList)
+            foreach (User user in FileMgr.UserList)
             {
-                if (patient.Id == input)
+                if (user.Id == input && user is Doctor)
                 {
                     patientExists = true;
-                    searchDoctor = (Doctor)patient;
+                    searchDoctor = (Doctor)user;
                     break;
                 }
             }
 
             if (!patientExists)
             {
-                Manager.WriteAt("Patient with ID #" + input + " does not exist. Please try again.", 0, ++row);
+                Manager.WriteAt("Doctor with ID #" + input + " does not exist. Please try again.", 0, ++row);
             }
         }
 
@@ -118,9 +123,9 @@ public class Admin : User
         Manager.WriteAt(searchDoctor.ToString(), 0, ++row);
 
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //Print all patient in userList
     private void PrintAllPatients()
     {
         int row = 6;
@@ -137,9 +142,9 @@ public class Admin : User
         }
 
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //Search patient info in userList with patientId received
     private void PrintPatientDetails()
     {
         int row = 6;
@@ -156,7 +161,7 @@ public class Admin : User
 
             foreach (User patient in FileMgr.UserList)
             {
-                if (patient.Id == input)
+                if (patient.Id == input && patient is Patient)
                 {
                     patientExists = true;
                     searchPatient = (Patient)patient;
@@ -177,9 +182,10 @@ public class Admin : User
         Manager.WriteAt(searchPatient.ToString(), 0, ++row);
 
         Console.ReadKey();
-        Menu();
     }
 
+    //Receive user input(input validation with regEx)
+    //Create new instance with type based on UserType and add to static userList
     private void AddUser(UserType user)
     {
         int id, row = 6;
@@ -191,23 +197,23 @@ public class Admin : User
         }
         string firstName, lastName, streetNum, streetName, city, email, phone, password = null;
         Regex regex = new Regex("[^a-zA-Z0-9\\.]");
-        Regex numRegEx = new Regex("[0-9]");
+        Regex numRegEx = new Regex("[^0-9]");
 
         if (user == UserType.Patient)
         {
-            Manager.DrawSquare("Add Doctor");
+            Manager.DrawSquare("Add Patient");
         }
         else
         {
-            Manager.DrawSquare("Add Patient");
+            Manager.DrawSquare("Add Doctor");
         }
 
         while (true)
         {
-            Manager.WriteAt("ID : ", 0, ++row);
+            Manager.WriteAt("ID(8 digit number) : ", 0, ++row);
             string input = Console.ReadLine();
             Match match = numRegEx.Match(input);
-            if (!int.TryParse(input, out id) || id < 10000000 || id > 99999999 || !match.Success)
+            if (!int.TryParse(input, out id) || id < 10000000 || id > 99999999 || match.Success)
             {
                 Manager.WriteAt("Invalid Id, Please write a 8 digits number", 0, ++row);
             }else if (idList.Contains(id))
@@ -253,7 +259,7 @@ public class Admin : User
 
         while (true)
         {
-            Manager.WriteAt("Email : ", 0, ++row);
+            Manager.WriteAt("Email (janedoe@example.com): ", 0, ++row);
             email = Console.ReadLine();
             if (!email.Contains('@'))
             {
@@ -271,7 +277,7 @@ public class Admin : User
             Manager.WriteAt("Street Number : ", 0, ++row);
             streetNum = Console.ReadLine();
             Match match = numRegEx.Match(streetNum);
-            if (!match.Success)
+            if (match.Success)
             {
                 Manager.WriteAt("Invalid Street Number. ", 0,
                     ++row);
@@ -284,10 +290,10 @@ public class Admin : User
 
         while (true)
         {
-            Manager.WriteAt("Street Name : ", 0, ++row);
+            Manager.WriteAt("Street Name (only street name, exclude St, Ave, etc..) : ", 0, ++row);
             streetName = Console.ReadLine();
             Match match = regex.Match(streetName);
-            if (!match.Success)
+            if (match.Success)
             {
                 Manager.WriteAt("Invalid street name. ", 0,
                     ++row);
@@ -303,7 +309,7 @@ public class Admin : User
             Manager.WriteAt("City : ", 0, ++row);
             city = Console.ReadLine();
             Match match = regex.Match(city);
-            if (!match.Success)
+            if (match.Success)
             {
                 Manager.WriteAt("Invalid city name. ", 0,
                     ++row);
@@ -316,10 +322,10 @@ public class Admin : User
 
         while (true)
         {
-            Manager.WriteAt("Phone : ", 0, ++row);
+            Manager.WriteAt("Phone(Number only): ", 0, ++row);
             phone = Console.ReadLine();
             Match match = numRegEx.Match(phone);
-            if (!match.Success)
+            if (match.Success)
             {
                 Manager.WriteAt("Invalid phone number. ", 0,
                     ++row);
@@ -329,11 +335,17 @@ public class Admin : User
                 break;
             }
         }
-
+        
+        //Password check
         while (true)
         {
-            Manager.WriteAt("Password : ", 0, ++row);
+            Manager.WriteAt("Password(8-16 digit, alphabets and numbers) : ", 0, ++row);
             password = Console.ReadLine();
+            if (password.Length < 8 || password.Length > 16)
+            {
+                Manager.WriteAt("Password should between 8-16 digit, alphabets and numbers", 0, ++row);
+                continue;
+            }
             while (true)
             {
                 Manager.WriteAt("Confirm Password : ", 0, ++row);
@@ -351,7 +363,9 @@ public class Admin : User
 
             break;
         }
-
+        
+        
+        //TypeCheck(enum UserType)
         if (user == UserType.Doctor)
         {
             Doctor doctor = new Doctor(id, firstName + " " + lastName, streetNum + ", " + streetName + ", " + city,
@@ -361,7 +375,7 @@ public class Admin : User
         }
         else if (user == UserType.Patient)
         {
-            Patient patient = new Patient(id, firstName + " " + lastName, streetNum + ", " + streetName + ", " + city,
+            Patient patient = new Patient(id, firstName + " " + lastName, streetNum + " " + streetName + " " + city,
                 email, phone, password);
             FileMgr.UserList.Add(patient);
             FileMgr.AddUserList.Add(patient);
@@ -369,6 +383,5 @@ public class Admin : User
 
         Manager.WriteAt(firstName + " " + lastName + " added successfully.", 0, ++row);
         Console.ReadKey();
-        Menu();
     }
 }

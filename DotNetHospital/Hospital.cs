@@ -6,6 +6,7 @@ using DotNetHospital;
 
 public class Hospital
 {
+    //Receive id and password
     public User Login()
     {
         bool accountExist = false, passCorrect = false;
@@ -14,7 +15,7 @@ public class Hospital
         ConsoleMgr manager = new ConsoleMgr();
         Console.SetBufferSize(Console.BufferWidth, 50);
 
-
+        //repeat until both correct
         while (!accountExist || !passCorrect)
         {
             accountExist = false;
@@ -26,7 +27,8 @@ public class Hospital
             manager.WriteAt("Password : ", 0, 7);
             SecureString pwd = new SecureString();
             ConsoleKeyInfo keyInfo;
-
+            //password masking
+            //char input (ConsoleKeyInfo) => SecureString => string
             do
             {
                 keyInfo = Console.ReadKey(true);
@@ -71,28 +73,29 @@ public class Hospital
                     }
                 }
             }
-
+            
+            //Id exists but password not match
             if (accountExist && !passCorrect)
             {
-                Console.WriteLine("Invalid Credential. please try again.");
+                manager.WriteAt("Invalid Credential. please try again.", 0, 8);
                 Console.ReadKey();
             }
-
+            
+            //Id not exists
             if (!accountExist)
             {
-                Console.WriteLine("Account does not exist, try again");
+                manager.WriteAt("Account does not exist, try again", 0, 8);
                 Console.ReadKey();
             }
         }
 
         return null;
     }
-
+    
+    //Execute when application exit
+    //Write all addUserList and addAppointmentList contents into files
     public static void OnApplicationExit(object sender, EventArgs e)
     {
-        Console.WriteLine("Destructor Test - Patient");
-        Console.ReadKey();
-
         if (FileMgr.AddAppointmentList.Count != 0)
         {
             foreach (Appointment temp in FileMgr.AddAppointmentList)
@@ -102,19 +105,36 @@ public class Hospital
             }
         }
 
-        Console.WriteLine("Destructor Test - Admin");
-        Console.ReadKey();
-
         if (FileMgr.AddUserList.Count != 0)
         {
             foreach (User temp in FileMgr.AddUserList)
             {
+                string addString;
                 char role = ' ';
                 if (temp is Doctor) role = 'D';
                 else if (temp is Patient) role = 'P';
 
-                string addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
-                                   temp.Phone + "," + role + "," + temp.Password + "," + " ";
+                if (temp is Patient)
+                {
+                    //Empty last column if doctor is not registered
+                    Patient tempPatient = (Patient)temp;
+                    if (tempPatient.MainDoctor != null)
+                    {
+                        addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
+                                           temp.Phone + "," + role + "," + temp.Password + "," + tempPatient.MainDoctor;        
+                    }
+                    else
+                    {
+                        addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
+                                           temp.Phone + "," + role + "," + temp.Password + "," + " ";   
+                    }
+                }
+                else
+                {
+                    addString = temp.Id + "," + temp.FullName + "," + temp.Address + "," + temp.Email + "," +
+                                       temp.Phone + "," + role + "," + temp.Password;
+                }
+                
                 FileMgr.WriteIntoFile(FileType.USER, addString);
             }
         }

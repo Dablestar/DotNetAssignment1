@@ -10,9 +10,13 @@ public enum FileType
 }
 public static class FileMgr
 {
+    
+    //Contains all users and appointments
     private static List<User> userList;
     private static List<Appointment> appointmentList;
-
+    
+    //Contains new users and appointments
+    //referenced by FileMgr on exit status
     private static List<User> addUserList;
     private static List<Appointment> addAppointmentList;
 
@@ -45,20 +49,35 @@ public static class FileMgr
         
         return result;
     }
+    
+    //Read userinfo.txt and get info
+    //Filter type by ROLE column (P: patient D: doctor A: admin)
     public static List<User> GetUserList()
     {
         List<User> userList = new List<User>();
         foreach(string[] tempUser in ReadFile("../../../userinfo.txt"))
         {
+            //ignore index row
             if (!tempUser[0].Equals("ID"))
             {
                 if (tempUser[5].Equals("P"))
                 {
                     if (tempUser.Length == 8)
                     {
-                        Patient tempPatient = new Patient(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
-                            tempUser[3], tempUser[4], tempUser[6], Convert.ToInt32(tempUser[7]));
-                        userList.Add(tempPatient);
+                        //doctor is not registered right after patient added
+                        //empty column == null
+                        if (tempUser[7].Equals(" "))
+                        {
+                            Patient tempPatient = new Patient(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
+                                tempUser[3], tempUser[4], tempUser[6], null);
+                            userList.Add(tempPatient);
+                        }
+                        else
+                        {
+                            Patient tempPatient = new Patient(Convert.ToInt32(tempUser[0]), tempUser[1], tempUser[2],
+                                tempUser[3], tempUser[4], tempUser[6], Convert.ToInt32(tempUser[7]));
+                            userList.Add(tempPatient);
+                        }
                     }
                     else
                     {
@@ -78,14 +97,12 @@ public static class FileMgr
                     userList.Add(tempPatient);
                 }
             }
-            else
-            {
-                continue;
-            }
         }
 
         return userList;
     }
+    
+    //read appointment.txt and get appointment list
     public static List<Appointment> GetAppointmentList()
     {
         List<string[]> appointments = ReadFile("../../../appointment.txt");
@@ -103,6 +120,10 @@ public static class FileMgr
         
         return results;
     }
+    
+    //based on appointmentList, return list only contains id
+    // if type is doctor, search on doctorId column
+    // if type is patient, search on patientId column
     public static List<Appointment> GetAppointmentList(int id, string type)
     {
         List<Appointment> result = new List<Appointment>();
@@ -136,6 +157,10 @@ public static class FileMgr
         try
         {
             List<string> contents = new List<string>();
+            foreach (string line in File.ReadAllLines(path))
+            {
+                contents.Add(line);    
+            }
             contents.Add(info);
             string[] result = contents.ToArray();
             File.WriteAllLines(path, result);
@@ -148,24 +173,28 @@ public static class FileMgr
         }
         
     }
-
+    
+    // if userinfo already exists in appointment.txt without doctorId, and received new appointment
+    // register doctorId in file.
     public static void AddDoctorToExistingPatient(Patient patient)
     {
         string path = "../../../userinfo.txt";
         string[] strList = File.ReadAllLines(path);
-
+        
         for(int i=0; i<strList.Length; i++)
         {
             if (strList[i].Contains(patient.Id.ToString()))
             {
                 strList[i] = patient.Id + "," + patient.FullName + "," + patient.Address + "," + patient.Email + "," +
                              patient.Phone + "," + "P," + patient.Password + "," + patient.MainDoctor;
+                break;
             }
         }
         
         File.WriteAllLines(path, strList);
     }
-
+    
+    //return fullName by userId
     public static string GetFullNameById(int id)
     {
         try
@@ -187,7 +216,7 @@ public static class FileMgr
         }
     }
     
-
+    //return user information by userId
     public static User GetUserById(int id)
     {
         try
@@ -208,6 +237,8 @@ public static class FileMgr
             return null;
         }
     }
+    
+    //Accessors
 
     public static List<User> UserList
     {

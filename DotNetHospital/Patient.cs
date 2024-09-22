@@ -1,28 +1,31 @@
 ﻿namespace DotNetHospital;
 public class Patient : User
 {
+    //doctorId
     private int? mainDoctor;
 
+    //Constructor for primary registeration
     public Patient(int id, string fullName, string address, string email, string phone, string password) : base(id,
         fullName, address, email, phone, password)
     {
         mainDoctor = null;
     }
     
-    public Patient(int id, string fullName, string address, string email, string phone, string password, int doctorId) : base(id,
+    //Constructor after doctor registered
+    public Patient(int id, string fullName, string address, string email, string phone, string password, int? doctorId) : base(id,
         fullName, address, email, phone, password)
     {
         mainDoctor = doctorId;
     }
-
+    
+    //Standard Menu based on while(true) loop.
     public override bool Menu()
     {
         while (true) 
         {
             int input = 0;
-            bool isQuit = false;
             Manager.DrawSquare("Patient Menu");
-            Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
+            Manager.WriteAt("\nWelcome to DOTNET Hospital " + FullName + "\n" +
                             "Please Choose an option \n" +
                             "1. List patient details \n" +
                             "2. List my doctor details\n" +
@@ -53,16 +56,12 @@ public class Patient : User
                     Console.WriteLine("Error, Please try again");
                     break;
             }
-
-            if (isQuit)
-            {
-                break;
-            }
         }
-
-        return false;
     }
 
+    //Add new appointment
+    //if doctor is already registered, receive comment and add
+    //if doctor is not registered, display doctor list and register by number
     private void AddAppointment()
     {
         int row = 6;
@@ -73,7 +72,7 @@ public class Patient : User
 
         if (mainDoctor == null)
         {
-            Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with : ", 0, row);
+            Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with (number) : ", 0, row);
             foreach (User temp in FileMgr.UserList)
             {
                 if (temp is Doctor)
@@ -82,11 +81,11 @@ public class Patient : User
                     doctorList.Add(temp);
                 }
             }
-
             while (true)
             {
-                choice = Convert.ToInt32(Console.Read());
-                if (choice > doctorList.Count + 1)
+                Console.WriteLine();
+                choice = Convert.ToInt32(Console.ReadLine());
+                if (choice > doctorList.Count)
                 {
                     Manager.WriteAt("Invalid Number, Please try again", 0, ++row);
                 }
@@ -118,6 +117,7 @@ public class Patient : User
     }
 
 
+    //print all appointments registered by this patient
     private void PrintAppointmentList()
     {
         int row = 6;
@@ -130,7 +130,8 @@ public class Patient : User
 
         Console.ReadKey();
     }
-
+    
+    // get detailed information of doctor by doctorId and print
     private void PrintDoctorDetails()
     {
         int row = 6;
@@ -150,7 +151,8 @@ public class Patient : User
         }
         Console.ReadKey();
     }
-
+    
+    //Print patient info
     private void PrintPatientDetails()
     {
         Manager.DrawSquare("My Details");
@@ -162,7 +164,8 @@ public class Patient : User
         Manager.WriteAt("Phone : " + Phone, 4, 10);
         Console.ReadKey();
     }
-
+    
+    //Empty column if doctor is not registered
     public override string ToString()
     {
         if (mainDoctor == null)
@@ -174,25 +177,11 @@ public class Patient : User
                "         | " + Address;
     }
 
-    public int MainDoctor
+    public int? MainDoctor
     {
-        get { return mainDoctor.Value; }
+        get { return mainDoctor; }
         set { mainDoctor = value; }
     }
-
-    ~Patient()
-    {
-        Console.WriteLine("Destructor Test - Patient");
-        Console.ReadKey();
-
-        if (FileMgr.AddAppointmentList.Count != 0)
-        {
-            foreach (Appointment temp in FileMgr.AddAppointmentList)
-            {
-                string addString = temp.DoctorId + "," + temp.PatientId + "," + temp.Description;
-                FileMgr.WriteIntoFile(FileType.APPOINTMENT, addString);
-            }
-        }
-    }
+    
 
 }

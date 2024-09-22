@@ -3,29 +3,32 @@
 
 public class Doctor : User
 {
-
+    
+    //Constructor
     public Doctor(int id, string fullName, string address, string email, string phone, string password) : base(id,
         fullName, address, email, phone, password)
     {
         
     }
     
+    //Standard Menu based on while(true) loop.
     public override bool Menu()
     {
-        int input = 0;
-        Manager.DrawSquare("Doctor Menu");
-        Manager.WriteAt("\nWelcome to DOTNET Hospital" + FullName + "\n" +
-                        "Please Choose an option \n" +
-                        "1. List doctor details \n" +
-                        "2. List patients\n" +
-                        "3. List appointments\n" +
-                        "4. Check particular patient\n" +
-                        "5. List appointments with patient\n" +
-                        "6. Exit to Login\n" +
-                        "7. Exit System\n", 4, 6);
-
+        
         while (true)
         {
+            int input = 0;
+            Manager.DrawSquare("Doctor Menu");
+            Manager.WriteAt("\nWelcome to DOTNET Hospital " + FullName + "\n" +
+                            "Please Choose an option \n" +
+                            "1. List doctor details \n" +
+                            "2. List patients\n" +
+                            "3. List appointments\n" +
+                            "4. Check particular patient\n" +
+                            "5. List appointments with patient\n" +
+                            "6. Exit to Login\n" +
+                            "7. Exit System\n", 4, 6);
+
             input = Convert.ToInt32(Console.ReadLine());
             switch (input)
             {
@@ -54,7 +57,8 @@ public class Doctor : User
             }
         }
     }
-
+    
+    //search patientId and print appointment of that patient.
     private void PrintAppointmentWithPatient()
     {
         int row = 6;
@@ -85,9 +89,9 @@ public class Doctor : User
             }
         }
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //Search id and print patient info who id matches.
     private void PrintParticularPatient()
     {
         int row = 6;
@@ -118,12 +122,12 @@ public class Doctor : User
             }
         }
         Manager.WriteAt("Name           | Doctor                | Email Address                  | Phone            | Address           ", 0, ++row);
-        Manager.WriteAt(searchPatient.FullName + "            | " + FullName + "          | " + searchPatient,0, ++row);
+        Manager.WriteAt(searchPatient.ToString(),0, ++row);
 
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //Print all appointments including this doctor's id
     private void PrintAppointments()
     {
         int row = 6;
@@ -135,9 +139,9 @@ public class Doctor : User
         }
 
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //Print all patients who has appointments to this doctor
     private void PrintPatients()
     {
         int row = 6;
@@ -162,9 +166,9 @@ public class Doctor : User
         }
 
         Console.ReadKey();
-        Menu();
     }
-
+    
+    //print basic informations
     private void PrintDoctorDetails()
     {
         int row = 6;
@@ -174,7 +178,6 @@ public class Doctor : User
         Manager.WriteAt(ToString(), 4, ++row);
         
         Console.ReadKey();
-        Menu();
     }
     public override string ToString()
     {

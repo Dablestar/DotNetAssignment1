@@ -1,6 +1,7 @@
 ﻿namespace DotNetHospital;
 
-
+//Parent class
+//inherit basic info and console manager
 public class User
 {
     private int id;
@@ -10,7 +11,7 @@ public class User
     public User()
     {
     }
-
+    
     public User(int id, string fullName, string address, string email, string phone, string password)
     {
         this.id = id;
