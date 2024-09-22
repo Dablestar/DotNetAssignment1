@@ -72,7 +72,7 @@ public class Patient : User
 
         if (mainDoctor == null)
         {
-            Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with (number) : ", 0, row);
+            Manager.WriteAt("You are not registered with any doctor! Please choose which doctor you would like to register with: ", 0, row);
             foreach (User temp in FileMgr.UserList)
             {
                 if (temp is Doctor)
@@ -83,7 +83,7 @@ public class Patient : User
             }
             while (true)
             {
-                Console.WriteLine();
+                Manager.WriteAt("Choose a Doctor (number): ", 0, ++row);
                 choice = Convert.ToInt32(Console.ReadLine());
                 if (choice > doctorList.Count)
                 {
